@@ -2,7 +2,7 @@ This project is a Lottery game with all the logic being stored into a smart cont
 
 ## Lottery contract
 
-- The contract [Solidity.sol](https://github.com/DGalinec/lottery/blob/master/Ethereum/contracts/Lottery.sol) was written in the Solidity programming language.
+- The contract [Lottery.sol](https://github.com/DGalinec/lottery/blob/master/Ethereum/contracts/Lottery.sol) is written in the Solidity programming language.
 
 - The contract has been pre-compiled and pre-tested on the [Remix](http://remix.ethereum.org/#optimize=false&version=soljson-v0.4.24+commit.e67f0147.js) Solidity IDE.
 
