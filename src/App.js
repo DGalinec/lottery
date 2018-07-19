@@ -10,7 +10,8 @@ class App extends Component {
     balance: '',
     value: '',
     message: '',
-    errorMessage: ''
+    errorMessage: '',
+    successTag: false
   };
 
   async componentDidMount() {
@@ -26,7 +27,7 @@ class App extends Component {
   onSubmit = async (event) => {
     event.preventDefault();
 
-    this.setState({ errorMessage: '' });
+    this.setState({ errorMessage: '', successTag: false });
 
     this.setState({ message : 'Waiting on transaction success...' });
 
@@ -46,18 +47,21 @@ class App extends Component {
     }
 
     if (this.state.errorMessage === '') {
+      this.setState({ successTag: true });
       this.setState({ message: 'You have been entered to the game!' });
 
       const players = await lottery.methods.getPlayers().call();
       const balance = await web3.eth.getBalance(lottery.options.address);
 
       this.setState({ players, balance });
-    } 
+    }
+    
+    this.setState({ value: '' });
   };
 
   onClick = async () => {
 
-    this.setState({ errorMessage: '' });
+    this.setState({ errorMessage: '', successTag: false });
 
     this.setState({ message: "Waiting on transaction success..." });
     console.log('message: ', this.state.message);
@@ -76,6 +80,7 @@ class App extends Component {
     }
 
     if (this.state.errorMessage === '') {
+      this.setState({ successTag: true });
       this.setState({ message: 'A winner has been picked!' });
 
       const players = await lottery.methods.getPlayers().call();
@@ -127,7 +132,8 @@ class App extends Component {
         <hr />
     
         { this.state.errorMessage!=='' ? <p className="alert alert-danger" role="alert">{this.state.errorMessage}</p> : null }
-        { (this.state.errorMessage==='' && this.state.message !=='' ) ? <p className="alert alert-warning" role="alert">{this.state.message}</p> : null }
+        { (this.state.errorMessage==='' && this.state.message !=='' && !this.state.successTag ) ? <p className="alert alert-info" role="alert">{this.state.message}</p> : null }
+        { (this.state.errorMessage==='' && this.state.message !=='' && this.state.successTag ) ? <p className="alert alert-success" role="alert">{this.state.message}</p> : null }
       </div>
     );
   }
