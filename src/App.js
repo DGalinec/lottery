@@ -9,7 +9,8 @@ class App extends Component {
     players: [],
     balance: '',
     value: '',
-    message: ''
+    message: '',
+    errorMessage: ''
   };
 
   async componentDidMount() {
@@ -25,67 +26,108 @@ class App extends Component {
   onSubmit = async (event) => {
     event.preventDefault();
 
-    const accounts = await web3.eth.getAccounts();
+    this.setState({ errorMessage: '' });
 
     this.setState({ message : 'Waiting on transaction success...' });
 
-    await lottery.methods.enter().send({ 
-      from: accounts[0],
-      value: web3.utils.toWei(this.state.value, 'ether')
-    });
+    try {
+      const accounts = await web3.eth.getAccounts();
 
-    this.setState({ message: 'You have been entered!' });
+      if (this.state.value >= 0.01) {
+        await lottery.methods.enter().send({ 
+          from: accounts[0],
+          value: web3.utils.toWei(this.state.value, 'ether')
+        });
+      } else {
+        this.setState({ errorMessage: "Minimum bet amount must be greater than or equal to 0.01 ether" });
+      }     
+    } catch(err) {
+      this.setState({ errorMessage: err.message });
+    }
+
+    if (this.state.errorMessage === '') {
+      this.setState({ message: 'You have been entered to the game!' });
+
+      const players = await lottery.methods.getPlayers().call();
+      const balance = await web3.eth.getBalance(lottery.options.address);
+
+      this.setState({ players, balance });
+    } 
   };
 
   onClick = async () => {
-    const accounts = await web3.eth.getAccounts();
 
-    this.setState({ message: 'Waiting on transaction success...' });
+    this.setState({ errorMessage: '' });
 
-    await lottery.methods.pickWinner().send({
-      from: accounts[0]
-    });
+    this.setState({ message: "Waiting on transaction success..." });
+    console.log('message: ', this.state.message);
 
-    this.setState({ message: 'A winner has been picked!' });
+    try {
+      const accounts = await web3.eth.getAccounts();
+      if (this.state.manager === accounts[0]) {
+        await lottery.methods.pickWinner().send({
+          from: accounts[0]
+        });
+      } else {
+        this.setState({ errorMessage: "Your are not the contract Manager! Only the contract owner is allowed to close the current game and pick a winner" });
+      }
+    } catch(err) {
+      this.setState({ errorMessage: err.message });
+    }
+
+    if (this.state.errorMessage === '') {
+      this.setState({ message: 'A winner has been picked!' });
+
+      const players = await lottery.methods.getPlayers().call();
+      const balance = await web3.eth.getBalance(lottery.options.address);
+
+      this.setState({ players, balance });
+    } 
   };
 
   render() {
     //console.log(web3.version);
     //web3.eth.getAccounts().then(console.log);
     return (
-      <div>
+      <div className="container">
         <div className="jumbotron text-center">
-          <h1>Lottery Contract</h1>
-          <h4>{lottery.options.address}</h4>
+          <h1>Blockchain Lottery</h1>
+          <h4>on Ethereum testnet (Rinkeby) - please enable MetaMask</h4>
+          {/*}<h4>{lottery.options.address}</h4>{*/}
           <h3>This contract is managed by</h3>
           <h4>{this.state.manager}</h4>
         </div>
 
-        <p>There are currently {this.state.players.length} people entered, competing to 
-        win {web3.utils.fromWei(this.state.balance, 'ether')} ether!</p>
+        <div className="alert alert-info" role="alert">There are currently {this.state.players.length} people entered, competing to win {web3.utils.fromWei(this.state.balance, 'ether')} ether!</div>
         
         <hr />
 
-        <form onSubmit={this.onSubmit}>
+        <div>
           <h4>Want to try your luck?</h4>
-          <div>
+          <p className="alert alert-warning" role="alert">Minimum bet amount is 0.01 Ether</p>
+        </div>
+        
+        <form onSubmit={this.onSubmit} className="form-inline">
+          <div className="form-group">
             <label>Amount of ether to enter</label>
               <input
                 value = { this.state.value }
                 onChange = { event => this.setState({ value: event.target.value })} 
               />
+            {` Ether `}
+            <button type="submit" className="btn btn-primary">Enter</button>
           </div>
-          <button>Enter</button>
         </form>
 
         <hr />
 
-        <h4>Ready to pick a winner?</h4>
-        <button onClick={this.onClick}>Pick a winner!</button>
+       {/*} <p className="alert alert-danger" role="alert">Only contract owner is allowed to close the current game and pick a winner</p> {*/}
+        <button onClick={this.onClick} className="btn btn-success">Pick a winner!</button>
 
         <hr />
-
-        <h1>{this.state.message}</h1>
+    
+        { this.state.errorMessage!=='' ? <p className="alert alert-danger" role="alert">{this.state.errorMessage}</p> : null }
+        { (this.state.errorMessage==='' && this.state.message !=='' ) ? <p className="alert alert-warning" role="alert">{this.state.message}</p> : null }
       </div>
     );
   }
