@@ -14,7 +14,7 @@ This project is a Lottery game with all the logic being stored into a smart cont
 
 ## User interface
 
-- This project is a was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+- This project is was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 - JavaScript source code of the user interface with calls to the Ethreum blockchain is in [App.js](https://github.com/DGalinec/lottery/blob/master/src/App.js) file.
 
@@ -23,3 +23,33 @@ This project is a Lottery game with all the logic being stored into a smart cont
 - Contract requires [MetaMask](https://metamask.io/) plugin to be installed in your Chrome or FireFox browser and be settled on the Rinkeby network in order to pay for transactions.
 
 - To run the user interface type `$ npm run start`. Application will start on localhost: 3000 in your browser. 
+
+## Folder structure
+
+After creation, your project should look like this:
+
+```
+lottery/
+  Ethereum/
+    compile.js
+    contracts/
+      Lottery.sol
+    deploy.js
+  node_modules/
+  package.json
+  public/
+    favicon.ico
+    index.html
+    manifest.json
+  README.md
+  src/
+    App.js
+    App.test.js
+    index.css
+    index.js
+    lottery.js
+    registerServiceWorker.js
+    web3.js
+  test/
+    Lottery.test.js
+```
