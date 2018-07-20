@@ -22,11 +22,11 @@ This project is a Lottery game with all the logic being stored into a smart cont
 
 - Contract requires [MetaMask](https://metamask.io/) plugin to be installed in your Chrome or FireFox browser and be settled on the Rinkeby network in order to pay for transactions.
 
-- To run the user interface type `$ npm run start`. Application will start on localhost: 3000 in your browser. 
+- To run the user interface type `~/$ npm run start`. Application will start on `localhost: 3000` in your browser. 
 
 ## Folder structure
 
-After creation, your project should look like this:
+After cloning files and running `~/$ npm install` in your working directory, your project should look like this:
 
 ```
 lottery/
